@@ -9,10 +9,10 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.hibernate</groupId>
-    <artifactId>step03-spring-data-jpa-liquibase</artifactId>
+    <artifactId>step03-spring-data-jpa-primary-keys</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>step02-spring-data-jpa-liquibase</name>
-    <description>step03-spring-data-jpa-mysql</description>
+    <name>step02-spring-data-jpa--primary-keys</name>
+    <description>step03-spring-data-jpa-primary-keys</description>
     <properties>
         <java.version>17</java.version>
     </properties>

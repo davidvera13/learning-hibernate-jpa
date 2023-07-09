@@ -15,17 +15,15 @@ import java.util.Objects;
 
 @Entity
 @Getter @Setter
-@AllArgsConstructor @NoArgsConstructor
-public class Book {
+@NoArgsConstructor
+public class BookNatural {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
     private String title;
     private String isbn;
     private String publisher;
     private Long authorId;
 
-    public Book(String title, String isbn, String publisher, Long authorId) {
+    public BookNatural(String title, String isbn, String publisher, Long authorId) {
         this.title = title;
         this.isbn = isbn;
         this.publisher = publisher;
@@ -37,13 +35,13 @@ public class Book {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        Book book = (Book) o;
+        BookNatural that = (BookNatural) o;
 
-        return Objects.equals(id, book.id);
+        return title.equals(that.title);
     }
 
     @Override
     public int hashCode() {
-        return id != null ? id.hashCode() : 0;
+        return title.hashCode();
     }
 }

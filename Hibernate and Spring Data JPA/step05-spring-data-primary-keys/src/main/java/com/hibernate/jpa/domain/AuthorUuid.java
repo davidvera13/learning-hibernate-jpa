@@ -1,28 +1,32 @@
 package com.hibernate.jpa.domain;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.annotations.Type;
 
+import java.sql.Types;
 import java.util.Objects;
+import java.util.UUID;
 
 @Entity
 @Getter @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Author {
+public class AuthorUuid {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    // @Type(type="org.hibernate.type.UUIDCharType") > not working with hibernate 6+
+    @JdbcTypeCode(value = Types.VARCHAR)
+    @Column(length = 36, columnDefinition = "varchar(36)", updatable = false, nullable = false )
+    private UUID id;
     private String firstName;
     private String lastName;
 
-    public Author(String firstName, String lastName) {
+    public AuthorUuid(String firstName, String lastName) {
         this.firstName = firstName;
         this.lastName = lastName;
     }
@@ -32,7 +36,7 @@ public class Author {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        Author author = (Author) o;
+        AuthorUuid author = (AuthorUuid) o;
 
         return Objects.equals(id, author.id);
     }

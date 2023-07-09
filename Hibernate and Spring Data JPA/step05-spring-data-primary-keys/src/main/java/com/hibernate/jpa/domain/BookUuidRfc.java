@@ -1,31 +1,33 @@
 package com.hibernate.jpa.domain;
 
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.GenericGenerator;
 
 import java.util.Objects;
+import java.util.UUID;
 
 
 @Entity
 @Getter @Setter
 @AllArgsConstructor @NoArgsConstructor
-public class Book {
+public class BookUuidRfc {
+    // SELECT hex(id) FROM bookdb.book_uuid_rfc;
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(generator = "uuid2")
+    @GenericGenerator(name="uuid2", strategy = "uuid2")
+    @Column(columnDefinition = "BINARY(16)", updatable = false, nullable = false)
+    private UUID id;
     private String title;
     private String isbn;
     private String publisher;
     private Long authorId;
 
-    public Book(String title, String isbn, String publisher, Long authorId) {
+    public BookUuidRfc(String title, String isbn, String publisher, Long authorId) {
         this.title = title;
         this.isbn = isbn;
         this.publisher = publisher;
@@ -37,7 +39,7 @@ public class Book {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        Book book = (Book) o;
+        BookUuidRfc book = (BookUuidRfc) o;
 
         return Objects.equals(id, book.id);
     }
