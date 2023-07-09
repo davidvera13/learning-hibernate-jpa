@@ -83,6 +83,23 @@ Liquibase is used for migrations:
 * add new table with liquibase
 
 
+### useful link
+> https://docs.liquibase.com/tools-integrations/maven/using-liquibase-and-maven-pom-file.html
+> https://docs.liquibase.com/tools-integrations/maven/commands/home.html
+> Create a changelog
+> https://docs.liquibase.com/tools-integrations/maven/commands/maven-generatechangelog.html
+
+Run: 
+> mvn liquibase:generateChangeLog
+> ![img.png](img.png)
+>  
+> Output: 
+> ![img_1.png](img_1.png)
+>  
+> Generated xml: 
+> ![img_2.png](img_2.png)
 
 
+for master
+https://web.archive.org/web/20220115080241/https://docs.liquibase.com/concepts/bestpractices.html
 

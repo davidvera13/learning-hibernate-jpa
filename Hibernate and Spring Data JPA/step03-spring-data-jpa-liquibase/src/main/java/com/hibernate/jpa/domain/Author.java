@@ -1,6 +1,5 @@
 package com.hibernate.jpa.domain;
 
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -12,24 +11,20 @@ import lombok.Setter;
 
 import java.util.Objects;
 
-
 @Entity
 @Getter @Setter
-@AllArgsConstructor @NoArgsConstructor
-public class Book {
+@AllArgsConstructor
+@NoArgsConstructor
+public class Author {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    private String title;
-    private String isbn;
-    private String publisher;
-    private Long authorId;
+    private String firstName;
+    private String lastName;
 
-    public Book(String title, String isbn, String publisher, Long authorId) {
-        this.title = title;
-        this.isbn = isbn;
-        this.publisher = publisher;
-        this.authorId = authorId;
+    public Author(String firstName, String lastName) {
+        this.firstName = firstName;
+        this.lastName = lastName;
     }
 
     @Override
@@ -37,13 +32,13 @@ public class Book {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        Book book = (Book) o;
+        Author author = (Author) o;
 
-        return Objects.equals(id, book.id);
+        return Objects.equals(id, author.id);
     }
 
     @Override
     public int hashCode() {
-        return id != null ? id.hashCode() : 0;
+        return id.hashCode();
     }
 }

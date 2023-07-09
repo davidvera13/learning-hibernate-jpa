@@ -4,10 +4,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class Step02SpringDataJpaMysqlApplication {
+public class Step03SpringDataJpaLiquibaseApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(Step02SpringDataJpaMysqlApplication.class, args);
+        SpringApplication.run(Step03SpringDataJpaLiquibaseApplication.class, args);
     }
 
 }

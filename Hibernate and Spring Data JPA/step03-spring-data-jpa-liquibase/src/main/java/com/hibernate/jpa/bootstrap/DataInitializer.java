@@ -22,12 +22,12 @@ public class DataInitializer implements CommandLineRunner {
         // delete all
         bookRepository.deleteAll();
         // save
-        Book bookDDD = new Book("Domain Driven Design", "123", "RandomHouse");
+        Book bookDDD = new Book("Domain Driven Design", "123", "RandomHouse", null);
         System.out.println("Domain Driven Design > Id: " + bookDDD.getId() );
         Book savedDDD = bookRepository.save(bookDDD);
         System.out.println("Domain Driven Design > Id: " + savedDDD.getId() );
 
-        Book bookSIA = new Book("Spring In Action", "234234", "Oriely");
+        Book bookSIA = new Book("Spring In Action", "234234", "Oriely", null);
         System.out.println("Spring In Action > Id: " + bookSIA.getId() );
         Book savedSIA = bookRepository.save(bookSIA);
         System.out.println("Spring In Action > Id: " + savedSIA.getId() );

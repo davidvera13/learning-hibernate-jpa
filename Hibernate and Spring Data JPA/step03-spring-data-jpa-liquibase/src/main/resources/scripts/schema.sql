@@ -1,5 +1,5 @@
-drop table if exists book;
-drop table if exists book_seq;
+# drop table if exists book;
+# drop table if exists book_seq;
 create table book (
                       id bigint not null,
                       isbn varchar(255),

@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class Step02SpringDataJpaMysqlApplicationBootstrapingTests {
+class Step03SpringDataJpaLiquibaseApplicationBootstrapingTests {
 
     @Test
     void contextLoads() {
