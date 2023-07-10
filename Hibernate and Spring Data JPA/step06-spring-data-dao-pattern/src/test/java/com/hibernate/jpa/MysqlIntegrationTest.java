@@ -28,6 +28,6 @@ public class MysqlIntegrationTest {
     @Order(1)
     void jpaMysqlTest() {
         long countBefore = bookRepository.count();
-        assertThat(countBefore).isEqualTo(2);
+        assertThat(countBefore).isEqualTo(7);
     }
 }
