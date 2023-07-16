@@ -10,7 +10,12 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.test.context.ActiveProfiles;
+
+import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -78,5 +83,101 @@ class BookDaoTest {
         assertThrows(EmptyResultDataAccessException.class, () -> {
             bookDao.getById(saved.getId());
         });
+    }
+
+    @Test
+    void findAllBooks() {
+        List<Book> books = bookDao.findAllBooks();
+        assertThat(books).isNotNull();
+        assertThat(books.size()).isGreaterThan(5);
+    }
+
+    // let's now do paging on query
+    @Test
+    void findAllBooksPaginated() {
+        List<Book> books;
+        books = bookDao.findAllBooks(10, 0);
+        assertThat(books).isNotNull();
+        assertThat(books.size()).isEqualTo(10);
+        System.out.println(books.size());
+
+        books = bookDao.findAllBooks(10, 10);
+        assertThat(books).isNotNull();
+        assertThat(books.size()).isLessThanOrEqualTo(10);
+        System.out.println(books.size());
+
+        books = bookDao.findAllBooks(10, 20);
+        assertThat(books).isNotNull();
+        assertThat(books.size()).isLessThanOrEqualTo(10);
+        System.out.println(books.size());
+
+
+        books = bookDao.findAllBooks(10, 120);
+        assertThat(books).isNotNull();
+        assertThat(books.size()).isEqualTo(0);
+        System.out.println(books.size());
+
+    }
+
+    // using pageable
+    @Test
+    void findAllBooksPageable() {
+        Pageable pageable;
+
+        List<Book> books;
+        pageable = PageRequest.of(0, 10);
+        books = bookDao.findAllBooksPageable(pageable);
+        assertThat(books).isNotNull();
+        assertThat(books.size()).isEqualTo(10);
+        System.out.println(books.size());
+
+        books = bookDao.findAllBooksPageable(PageRequest.of(1, 10));
+        assertThat(books).isNotNull();
+        assertThat(books.size()).isLessThanOrEqualTo(10);
+        System.out.println(books.size());
+
+        books = bookDao.findAllBooksPageable(PageRequest.of(2, 10));
+        assertThat(books).isNotNull();
+        assertThat(books.size()).isLessThanOrEqualTo(10);
+        System.out.println(books.size());
+
+
+        books = bookDao.findAllBooksPageable(PageRequest.of(20, 100));
+        assertThat(books).isNotNull();
+        assertThat(books.size()).isEqualTo(0);
+        System.out.println(books.size());
+    }
+
+    // using pageable
+    @Test
+    void findAllBooksSortingByTitle() {
+        Pageable pageable;
+
+        List<Book> books;
+        pageable = PageRequest.of(0, 10, Sort.by(Sort.Order.desc("title")));
+        books = bookDao.findAllBooksSortingByTitle(pageable);
+        assertThat(books).isNotNull();
+        assertThat(books.size()).isEqualTo(10);
+        System.out.println(books.size());
+
+        books = bookDao.findAllBooksPageable(
+                PageRequest.of(0, 10, Sort.by(Sort.Order.desc("title"))));
+        assertThat(books).isNotNull();
+        assertThat(books.size()).isLessThanOrEqualTo(10);
+        System.out.println(books.size());
+
+        books = bookDao.findAllBooksPageable(
+                PageRequest.of(0, 10, Sort.by(Sort.Order.desc("title"))));
+        assertThat(books).isNotNull();
+        assertThat(books.size()).isLessThanOrEqualTo(10);
+        System.out.println(books.size());
+
+
+        books = bookDao.findAllBooksPageable(
+                PageRequest.of(0, 10, Sort.by(
+                        Sort.Order.desc("title").getDirection().name())));
+        assertThat(books).isNotNull();
+        assertThat(books.size()).isLessThanOrEqualTo(10);
+        System.out.println(books.size());
     }
 }

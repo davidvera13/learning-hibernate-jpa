@@ -4,9 +4,12 @@ import com.hibernate.jpa.dao.AuthorDao;
 import com.hibernate.jpa.domain.Author;
 import com.hibernate.jpa.mappers.AuthorMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 @Component
 public class AuthorDaoImpl implements AuthorDao {
@@ -24,7 +27,6 @@ public class AuthorDaoImpl implements AuthorDao {
                 getRowMapper(),
                 id);
     }
-
 
     @Override
     public Author getAuthorByName(String firstName, String lastName) {
@@ -56,6 +58,23 @@ public class AuthorDaoImpl implements AuthorDao {
         jdbcTemplate.update("DELETE FROM author WHERE id = ?", id);
     }
 
+    @Override
+    public List<Author> findAuthorsByLastName(Pageable pageable, String lastName) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("SELECT * FROM author WHERE last_name = ? ");
+        if(pageable.getSort().getOrderFor("firstname") != null) {
+            sb
+                    .append( "ORDER BY first_name ")
+                    .append(pageable.getSort().getOrderFor("title").getDirection().name());
+        }
+        sb.append("  limit ? offset ?");
+        System.out.println(sb);
+
+
+        return jdbcTemplate.query(sb.toString(),
+                getRowMapper(),
+                lastName, pageable.getPageSize(), pageable.getOffset());
+    }
 
     private RowMapper<Author> getRowMapper() {
         return new AuthorMapper();
