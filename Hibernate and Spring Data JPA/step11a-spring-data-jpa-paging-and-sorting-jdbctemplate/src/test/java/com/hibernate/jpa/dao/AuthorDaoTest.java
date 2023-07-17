@@ -95,10 +95,5 @@ class AuthorDaoTest {
         assertThat(authors).isNotNull();
         assertThat(authors.size()).isLessThanOrEqualTo(10);
         System.out.println(authors.size());
-
-
-
-
     }
-
 }

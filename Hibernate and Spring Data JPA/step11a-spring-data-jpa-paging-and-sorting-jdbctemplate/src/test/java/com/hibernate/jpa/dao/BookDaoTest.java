@@ -160,24 +160,17 @@ class BookDaoTest {
         assertThat(books.size()).isEqualTo(10);
         System.out.println(books.size());
 
-        books = bookDao.findAllBooksPageable(
+        books = bookDao.findAllBooksSortingByTitle(
                 PageRequest.of(0, 10, Sort.by(Sort.Order.desc("title"))));
         assertThat(books).isNotNull();
         assertThat(books.size()).isLessThanOrEqualTo(10);
         System.out.println(books.size());
 
-        books = bookDao.findAllBooksPageable(
+        books = bookDao.findAllBooksSortingByTitle(
                 PageRequest.of(0, 10, Sort.by(Sort.Order.desc("title"))));
         assertThat(books).isNotNull();
         assertThat(books.size()).isLessThanOrEqualTo(10);
         System.out.println(books.size());
 
-
-        books = bookDao.findAllBooksPageable(
-                PageRequest.of(0, 10, Sort.by(
-                        Sort.Order.desc("title").getDirection().name())));
-        assertThat(books).isNotNull();
-        assertThat(books.size()).isLessThanOrEqualTo(10);
-        System.out.println(books.size());
     }
 }
