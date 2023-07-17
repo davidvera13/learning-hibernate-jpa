@@ -6,6 +6,7 @@ import com.hibernate.jpa.repository.AuthorRepository;
 import jakarta.persistence.*;
 import jakarta.persistence.criteria.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -58,6 +59,11 @@ public class AuthorDaoImpl implements AuthorDao {
         storedAuthor.setFirstName(author.getFirstName());
         storedAuthor.setFirstName(author.getFirstName());
         return authorRepository.save(storedAuthor);
+    }
+
+    @Override
+    public List<Author> findAuthorsByLastName(Pageable pageable, String lastName) {
+        return authorRepository.findAuthorByLastName(lastName, pageable).getContent();
     }
 
     @Override

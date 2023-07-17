@@ -8,6 +8,8 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -66,5 +68,26 @@ public class BookDaoImpl implements BookDao {
     @Override
     public void deleteBookById(long id) {
         bookRepository.deleteById(id);
+    }
+
+    @Override
+    public List<Book> findAllBooks(int limit, int offset) {
+        return bookRepository.findAllWithLimitAndOffset(limit, offset);
+    }
+
+    @Override
+    public List<Book> findAllBooksPageable(Pageable pageable) {
+        return bookRepository.findAll(pageable).getContent();
+    }
+
+    @Override
+    public List<Book> findAllBooksSortingByTitle(Pageable pageable) {
+        Page<Book> bookPage = bookRepository.findAll(pageable);
+        return bookPage.getContent();
+    }
+
+    @Override
+    public Page<Book> findAllBooksSortingByTitlePage(Pageable pageable) {
+        return bookRepository.findAll(pageable);
     }
 }

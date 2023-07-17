@@ -11,6 +11,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.Future;
 import java.util.stream.Stream;
@@ -47,4 +48,7 @@ public interface BookRepository extends JpaRepository<Book, Long> {
 
     // jpa named query
     Book jpaNamedQuery(@Param("title") String title);
+
+    @Query(value = "SELECT * FROM book LIMIT :limit OFFSET :offset", nativeQuery = true)
+    List<Book> findAllWithLimitAndOffset(@Param("limit") int limit, @Param("offset") int offset);
 }
