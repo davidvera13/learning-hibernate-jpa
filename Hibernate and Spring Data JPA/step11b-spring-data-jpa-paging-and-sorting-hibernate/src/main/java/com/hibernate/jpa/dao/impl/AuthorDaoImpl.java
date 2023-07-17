@@ -5,6 +5,8 @@ import com.hibernate.jpa.domain.Author;
 import jakarta.persistence.*;
 import jakarta.persistence.criteria.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -152,6 +154,25 @@ public class AuthorDaoImpl implements AuthorDao {
         em.getTransaction().commit();
     }
 
+    @Override
+    public List<Author> findAuthorsByLastName(Pageable pageable, String lastName) {
+        EntityManager em = getEntityManager();
+        try {
+            // hql : replace * with a (alias)
+            String sql = "SELECT a FROM Author a WHERE a.lastName = :lastName ";
+            if(pageable.getSort().getOrderFor("firstName") != null) {
+                sql += "ORDER BY a.firstName " +
+                        pageable.getSort().getOrderFor("firstName").getDirection().name();
+            }
+            TypedQuery<Author> query = em.createQuery(sql, Author.class);
+            query.setParameter("lastName", lastName);
+            query.setFirstResult(Math.toIntExact(pageable.getOffset()));
+            query.setMaxResults(pageable.getPageSize());
+            return query.getResultList();
+        } finally {
+            em.close();
+        }
+    }
 
     private EntityManager getEntityManager() {
         return emf.createEntityManager();

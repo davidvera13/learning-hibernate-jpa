@@ -10,6 +10,9 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Profile;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
@@ -122,4 +125,24 @@ class AuthorDaoTest {
         authorDao.deleteAuthorById(author.getId());
         assertThat(authorDao.getAuthorById(author.getId())).isNull();
     }
+
+    @Test
+    void findAuthorsByLastName() {
+        Pageable pageable;
+
+        List<Author> authors;
+        pageable = PageRequest.of(0, 10, Sort.by(Sort.Order.desc("firstName")));
+
+        authors = authorDao.findAuthorsByLastName(pageable, "Smith");
+        assertThat(authors).isNotNull();
+        assertThat(authors.size()).isLessThanOrEqualTo(10);
+        System.out.println(authors.size());
+
+        authors = authorDao.findAuthorsByLastName(
+                PageRequest.of(0, 10, Sort.by(Sort.Order.desc("firstName"))), "Smith");
+        assertThat(authors).isNotNull();
+        assertThat(authors.size()).isLessThanOrEqualTo(10);
+        System.out.println(authors.size());
+    }
+
 }

@@ -9,6 +9,7 @@ import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
 import org.aspectj.weaver.ast.Literal;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -123,6 +124,47 @@ public class BookDaoImpl implements BookDao {
         em.remove(book);
         em.getTransaction().commit();
         em.close();
+    }
+
+    @Override
+    public List<Book> findAllBooks(int limit, int offset) {
+        EntityManager em = getEntityManager();
+        try {
+            TypedQuery<Book> query = em.createQuery("SELECT b FROM Book b", Book.class);
+            query.setFirstResult(offset);
+            query.setMaxResults(limit);
+            return query.getResultList();
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
+    public List<Book> findAllBooksPageable(Pageable pageable) {
+        EntityManager em = getEntityManager();
+        try {
+            String sql = "SELECT b FROM Book b ORDER BY b.title " +
+                    pageable.getSort().getOrderFor("title").getDirection().name();
+            TypedQuery<Book> query = em.createQuery(sql, Book.class);
+            query.setFirstResult(Math.toIntExact(pageable.getOffset()));
+            query.setMaxResults(pageable.getPageSize());
+            return query.getResultList();
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
+    public List<Book> findAllBooksSortingByTitle(Pageable pageable) {
+        EntityManager em = getEntityManager();
+        try {
+            TypedQuery<Book> query = em.createQuery("SELECT b FROM Book b", Book.class);
+            query.setFirstResult(Math.toIntExact(pageable.getOffset()));
+            query.setMaxResults(pageable.getPageSize());
+            return query.getResultList();
+        } finally {
+            em.close();
+        }
     }
 
     private EntityManager getEntityManager(){
