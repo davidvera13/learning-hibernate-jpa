@@ -31,4 +31,26 @@ class OrderHeaderRepositoryTest {
         assertNotNull(fetchedOrder);
         assertNotNull(fetchedOrder.getId());
     }
+
+    @Test
+    void testEquals() {
+        OrderHeader obj1 = new OrderHeader();
+        obj1.setId(1L);
+
+        OrderHeader obj2 = new OrderHeader();
+        obj2.setId(1L);
+
+        assertEquals(obj1, obj2);
+    }
+
+    @Test
+    void testNotEquals() {
+        OrderHeader obj1 = new OrderHeader();
+        obj1.setId(1L);
+
+        OrderHeader obj2 = new OrderHeader();
+        obj2.setId(2L);
+
+        assertNotEquals(obj1, obj2);
+    }
 }
