@@ -24,7 +24,7 @@ class ProductRepositoryTest {
     void testSaveProduct() {
         Product product = new Product();
         product.setDescription("description");
-        product.setOrderStatus(ProductStatus.IN_STOCK);
+        product.setProductStatus(ProductStatus.IN_STOCK);
         Product savedProduct = productRepository.save(product);
 
         assertNotNull(savedProduct);

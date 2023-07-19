@@ -3,7 +3,9 @@ package com.hibernate.jpa.orders.domain;
 import com.hibernate.jpa.orders.enums.OrderStatus;
 import jakarta.persistence.*;
 
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @AttributeOverrides({
@@ -41,12 +43,8 @@ import java.util.Objects;
         )
 })
 public class OrderHeader extends BaseEntity{
-//    moved to super class
-//    @Id
-//    @GeneratedValue(strategy = GenerationType.IDENTITY)
-//    private Long id;
-
-    private String customer;
+    @ManyToOne
+    private Customer customer;
     @Embedded
     private Address shippingAddress;
     @Embedded
@@ -54,18 +52,16 @@ public class OrderHeader extends BaseEntity{
     @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus;
 
-//    public Long getId() {
-//        return id;
-//    }
-//    public void setId(Long id) {
-//        this.id = id;
-//    }
+    // step 3: update the relation to OrderLine with a one to many
+    // note: we will have: orderLine id null if we do not cascade
+    @OneToMany(mappedBy = "orderHeader", cascade = CascadeType.PERSIST)
+    private Set<OrderLine> orderLines;
 
-    public String getCustomer() {
+    public Customer getCustomer() {
         return customer;
     }
 
-    public void setCustomer(String customer) {
+    public void setCustomer(Customer customer) {
         this.customer = customer;
     }
 
@@ -93,6 +89,14 @@ public class OrderHeader extends BaseEntity{
         this.orderStatus = orderStatus;
     }
 
+    public Set<OrderLine> getOrderLines() {
+        return orderLines;
+    }
+
+    public void setOrderLines(Set<OrderLine> orderLines) {
+        this.orderLines = orderLines;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -106,7 +110,8 @@ public class OrderHeader extends BaseEntity{
             return false;
         if (!Objects.equals(billToAddress, that.billToAddress))
             return false;
-        return orderStatus == that.orderStatus;
+        if (orderStatus != that.orderStatus) return false;
+        return Objects.equals(orderLines, that.orderLines);
     }
 
     @Override
@@ -116,7 +121,20 @@ public class OrderHeader extends BaseEntity{
         result = 31 * result + (shippingAddress != null ? shippingAddress.hashCode() : 0);
         result = 31 * result + (billToAddress != null ? billToAddress.hashCode() : 0);
         result = 31 * result + (orderStatus != null ? orderStatus.hashCode() : 0);
+        result = 31 * result + (orderLines != null ? orderLines.hashCode() : 0);
         return result;
+    }
+
+    /**
+     * Helper method
+     * @param orderLine
+     */
+    public void addOrderLine(OrderLine orderLine) {
+        if(orderLines == null)
+            orderLines = new HashSet<>();
+
+        orderLines.add(orderLine);
+        orderLine.setOrderHeader(this);
     }
 }
 
