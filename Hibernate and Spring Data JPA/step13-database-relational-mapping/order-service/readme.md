@@ -69,3 +69,37 @@ deleting the OrderHeader
 * Hibernate will reference this for schema generation only
 * It is not enforced nor generated if missing
 * When using schema migration tools like Liquibase or Flyway it is not needed
+
+### Flushing
+
+Flushing is the process of synchronizing the state of the persistence context with the underlying database. The EntityManager and the Hibernate Session expose a set of methods, through which the application developer can change the persistent state of an entity.
+
+The persistence context acts as a transactional write-behind cache, queuing any entity state change. Like any write-behind cache, changes are first applied in-memory and synchronized with the database during flush time. The flush operation takes every entity state change and translates it to an INSERT, UPDATE or DELETE statement.
+
+The flushing strategy is given by the flushMode of the current running Hibernate Session. Although JPA defines only two flushing strategies (AUTO and COMMIT), Hibernate has a much broader spectrum of flush types:
+
+* ALWAYS: Flushes the Session before every query;
+* AUTO: This is the default mode and it flushes the Session only if necessary;
+* COMMIT: The Session tries to delay the flush until the current Transaction is committed, although it might flush prematurely too;
+* MANUAL: The Session flushing is delegated to the application, which must call Session.flush() explicitly in order to apply the persistence context changes.
+By default, Hibernate uses the AUTO flush mode which triggers a flush in the following circumstances:
+
+* prior to committing a Transaction;
+* prior to executing a JPQL/HQL query that overlaps with the queued entity actions;
+* before executing any native SQL query that has no registered synchronization.
+
+### JPA Specific Cascade Types
+
+* ALL - propagates all operations
+* PERSIST - Will also save child objects (transient instances)
+* MERGE - Merge copies the state of a given object to the persistent object. MERGE
+includes child entities
+* REMOVE - Cascades delete operations to child objects
+* REFRESH - Cascades refresh operations to child objects
+* DETACH - Detaches child objects from persistence context
+
+### Hibernate Specific Cascade Types
+* DELETE - Same as JPA REMOVE
+* SAVE_UPDATE - Cascades Hibernate Save and Update operations to child objects
+* REPLICATE - Replicates child objects to second data source
+* LOCK - Reattaches entity and children to persistence context without refresh

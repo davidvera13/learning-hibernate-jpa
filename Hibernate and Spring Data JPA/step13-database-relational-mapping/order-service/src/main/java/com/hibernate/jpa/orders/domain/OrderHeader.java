@@ -54,8 +54,24 @@ public class OrderHeader extends BaseEntity{
 
     // step 3: update the relation to OrderLine with a one to many
     // note: we will have: orderLine id null if we do not cascade
-    @OneToMany(mappedBy = "orderHeader", cascade = CascadeType.PERSIST)
+    // for delete:
+    // Hibernate: delete from order_line where id=?
+    // Hibernate: delete from order_header where id=?
+    @OneToMany(
+            mappedBy = "orderHeader",
+            cascade = {
+                    CascadeType.PERSIST, CascadeType.REMOVE
+            })
     private Set<OrderLine> orderLines;
+
+    // if we add the @OneToOne relationship to OrderHeader, we don't need to use orphan removal,
+    // we need to use mappedBy instead
+    @OneToOne(
+            cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
+            // orphanRemoval = true // orderApproval value is not deleted if absent
+            mappedBy = "orderHeader"
+    )
+    private OrderApproval orderApproval;
 
     public Customer getCustomer() {
         return customer;
@@ -96,6 +112,16 @@ public class OrderHeader extends BaseEntity{
     public void setOrderLines(Set<OrderLine> orderLines) {
         this.orderLines = orderLines;
     }
+
+    public OrderApproval getOrderApproval() {
+        return orderApproval;
+    }
+
+    public void setOrderApproval(OrderApproval orderApproval) {
+        this.orderApproval = orderApproval;
+        orderApproval.setOrderHeader(this);
+    }
+
 
     @Override
     public boolean equals(Object o) {
