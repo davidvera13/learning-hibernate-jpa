@@ -38,6 +38,22 @@ public class DataLoadTest {
     @Autowired
     ProductRepository productRepository;
 
+
+    @Test
+    void dbLock() {
+        Long id = 33L;
+        // if we execute SELECT * FROM orderservice.order_header where id = 33 FOR UPDATE;
+        // in mysql, transaction won't be commited
+        OrderHeader orderHeader = orderHeaderRepository.findById(id).get();
+
+        Address billTo = new Address();
+        billTo.setAddress("Bill me");
+        orderHeader.setBillToAddress(billTo);
+        orderHeaderRepository.saveAndFlush(orderHeader);
+
+        System.out.println("I updated the order");
+    }
+
     // Hibernate N+1 problem occurs when you use FetchType. LAZY for your entity associations.
     // If you perform a query to select n-entities and if you try to call any access method of
     // your entity's lazy association, Hibernate will perform n-additional queries to load
@@ -113,14 +129,14 @@ public class DataLoadTest {
 
     }
 
-    // @Disabled
+    @Disabled
     @Rollback(value = false)
     @Test
     void testDataLoader() {
         List<Product> products = loadProducts();
         Customer customer = loadCustomers();
 
-        int ordersToCreate = 100;
+        int ordersToCreate = 10_000;
 
         for (int i = 0; i < ordersToCreate; i++){
             System.out.println("Creating order #: " + i);

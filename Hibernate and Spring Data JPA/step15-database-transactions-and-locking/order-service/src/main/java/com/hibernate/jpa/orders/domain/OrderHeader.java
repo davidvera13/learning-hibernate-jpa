@@ -79,6 +79,9 @@ public class OrderHeader extends BaseEntity{
     @Fetch(FetchMode.SELECT)
     private OrderApproval orderApproval;
 
+    @Version
+    private Integer version;
+
     public Customer getCustomer() {
         return customer;
     }
@@ -128,6 +131,13 @@ public class OrderHeader extends BaseEntity{
         orderApproval.setOrderHeader(this);
     }
 
+    public Integer getVersion() {
+        return version;
+    }
+
+    public void setVersion(Integer version) {
+        this.version = version;
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -154,6 +164,7 @@ public class OrderHeader extends BaseEntity{
         result = 31 * result + (billToAddress != null ? billToAddress.hashCode() : 0);
         result = 31 * result + (orderStatus != null ? orderStatus.hashCode() : 0);
         result = 31 * result + (orderLines != null ? orderLines.hashCode() : 0);
+
         return result;
     }
 
