@@ -1,12 +1,14 @@
 package com.hibernate.jpa.orders.domain;
 
 import jakarta.persistence.Embeddable;
+import org.hibernate.validator.constraints.Length;
 
 import java.util.Objects;
 
 @Embeddable // take the properties and put in other entities
 public class Address {
     private String address;
+    @Length(max = 30)
     private String city;
     private String state;
     private String zipCode;

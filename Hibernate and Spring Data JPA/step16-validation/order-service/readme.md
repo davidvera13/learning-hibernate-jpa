@@ -1,250 +1,106 @@
-# Hibernate & Spring Data JPA: Databases transactions
+# Java Bean Validation
 
-### SQL Database Transactions - ACID
-* Atomicity - All operations are completed successfully or database is returned to previous
-state.
-* Consistency - Operations do not violate system integrity constraints.
-* Isolated - Results are independent of concurrent transactions.
-* Durable - Results are made persistent in case of system failure (ie written to disk)
+### JSR 303 - Java Bean Validation
 
-### important terms
+* JSR 303 Introduced Java Bean Validation (Version 1.0)
+  * Set of annotations used to validate Java Bean properties
+* Approved on November 16th, 2009.
+* Part of JEE v6 and above
+* JSR 303 Supported by Spring since version 3
+* Primary focus was to define annotations for data validation
+  * Largely field level properties
 
-* Transaction - A unit of work. One or more SQL operations
-    * Typically DML (and Not DDL) statements which alter data.
-    * Can be just one; can be hundreds or thousands.
-* Commit - Indicates the end of the transaction and tells database to make changes permanent.
-    * More efficient to do multiple operations in a transaction. There is a ‘cost’ with commits.
-* Rollback - Revert all changes of the transaction
-* Save Point - Programmatic point you can set, which allows you to rollback to (ie rollback part of a transaction)
+### JSR 349 Bean Validation 1.1
 
-### database locks
+* JSR 349 - Java Bean Validation 1.1 released on April 10th, 2013.
+  * JEE v7, Spring Framework 4
+* Builds upon 1.0 specification
+* Expanded to method level validation
+  * To validate input parameters
+* Includes dependency injection for bean validation components
 
-* The database will lock the records, (in some cases whole table or database) to prevent
-other processes from changing data
-    * ACID compliance
-* Within a transaction the following DML statements will lock records of the affected rows:
-  * SELECT FOR UPDATE; UPDATE; DELETE
-* During the transactions other sessions attempting to modify locked records will by default
-  wait for the lock to be released. (ie interactively it will seem like things are hanging)
-* Deadlock - Occurs where two transactions lock each other and can never complete.
-* Both fail and roll back
+### JSR 380 - Bean Validation 2.0
 
-### Transaction Isolation Levels 
-* Repeatable Read - Default Isolation Level. Your statement receives a consistent view of
-the database, even if other transactions are committed during your transaction.
-    * Your transaction gets a snapshot of the data, which does not change.
-* Read Committed - Reads within your transaction will receive a fresh snapshot of the data.
-  * Read Uncommitted - Reads are not consistent, but may avoid additional database locks.
-  * aka - “Dirty Read”
-* Serializable - Similar to Repeatable Read, but may lock rows selected in transaction.
+* Approved August 2017
+* Added to Spring Framework 5.0 RC2
+* Available in Spring Boot 2.0.0 +
+* Uses Hibernate Validator 6.0 + (Implementation of Bean Validation 2.0)
+* Primary goal of Bean Validation 2.0 is Java 8 language features
+* Added ~11 new built in validation annotations
+* Remainder of presentation will focus on Bean Validation 2.0
 
-### Pragmatic Concepts to Remember
+### Built In Constraint Definitions
 
-* Using the default transaction isolation level, your transaction see’s a snapshot of the
-database as it is at the start of the transaction.
-  * Changes made in other sessions and committed WILL NOT be visible
-  * Changes made by your session WILL NOT be visible to other sessions until commit
-* Most modern RDBMS do a good job of ACID compliance
-  * Support for ACID with NoSQL database varies widely by vendor
-  * ACID compliance is complex and costly - hence high performance of NoSQL databases
+* @Null - Checks value is null
+* @NotNull - Checks value is not null
+* @AssertTrue - Value is true
+* @AssertFalse - Value is false
+* @Min - Number is equal or higher
+* @Max - Number is equal or less
+* @DecimalMin - Value is larger 
+* @DecimalMax - Value is less than 
+* @Negative - Value is less than zero. Zero invalid. 
+* @NegativeOrZero - Value is zero or less than zero 
+* @Positive - Value is greater than zero. Zero invalid. 
+* @PositiveOrZero - Value is zero or greater than zero. 
+* @Size - checks if string or collection is between a min and max
+* @Digits - check for integer digits and fraction digits 
+* @Past - Checks if date is in past 
+* @PastOrPresent - Checks if date is in past or present 
+* @Future - Checks if date is in future 
+* @FutureOrPresent - Checks if date is present or in future 
+* @Pattern - checks against RegEx pattern
+* @NotEmpty - Checks if value is not null nor empty (whitespace characters or empty
+  collection)
+* @NonBlank - Checks string is not null or not whitespace characters 
+* @Email - Checks if string value is an email address
 
-### The “Lost” Update
-* Database record has quantity of 10
-* Session A reads 10, adds 5 making quantity 15, database record is Locked during update
-* Session B reads 10, adds 5 making quantity 15, but is blocked by the lock of Session A
-  * Would be 20, if Session B could see the uncommitted change
-* Session A commits record, releasing lock. Database record is updated to 15
-* Session B released, updates database record to 15
-* Thus the update of Session A is “Lost”
+### Hibernate Validator Constraints
 
-### JDBC Locking Modes
-* JDBC Drivers support several different locking modes
-* Mode applies to lifespan of the connection
-* Configuration is very vendor dependent
-* Rarely used in practice.
-* JPA/Hibernate is generally favored
+* @ScriptAssert - Class level annotation, checks class against script 
+* @CreditCardNumber - Verifies value is a credit card number 
+* @Currency - Valid currency amount 
+* @DurationMax - Duration less than given value 
+* @DurationMin - Duration greater than given value 
+* @EAN - Valid EAN barcode 
+* @ISBN - Valid ISBN value
+* @Length - String length between given min and max 
+* @CodePointLength - Validates that code point length of the annotated character
+  sequence is between min and max included. 
+* @LuhnCheck - Luhn check sum 
+* @Mod10Check - Mod 10 check sum 
+* @Mod11Check - Mod 11 check sum
+* @Range - checks if number is between given min and max (inclusive)
+* @SafeHtml - Checks for safe HTML 
+* @UniqueElements - Checks if collection has unique elements 
+* @Url - checks for valid URL
+* @CNPJ - Brazilian Corporate Tax Payer Registry Number 
+* @CPF - Brazilian Individual Taxpayer Registry Number 
+* @TituloEleitoral - Brazilian voter ID 
+* @NIP - Polish VAR ID 
+* @PESEL - Polish National Validation Number 
+* @REGON - Polish Taxpayer ID
 
-### JPA locking
-* Pessimistic Locking
-  * Database mechanisms are used to lock records for updates
-  * Capabilities vary widely depending on database and version of JDBC driver used
-  * Simplest version is “SELECT FOR UPDATE…” - Locks row or rows until commit or
-  rollback is issued
-* Optimistic Locking
-  * Done by checking a version attribute of the entity
+### Validation and Spring Framework
+* Spring Framework has robust support for bean validation
+* Validation support can be used in controllers, and services, and other Spring managed
+components
+* Focus in this course will be on support with in Spring Data JPA
+* Annotated entities will be validated before persistence operations
+* Runtime exception is thrown if there is a validation constraint error
+* Spring Boot will auto-configure validation when the validation implementation is found on
+  classpath
+* If API is only on classpath (with no implementation) you can use the annotations, BUT
+  validation will NOT occur
+* Prior to Spring Boot 2.3, validation was included in starter dependencies
+* After Spring Boot 2.3, you must include the Spring Boot validation starter
 
-### JPA Locking - Which to Use???
+### What to Validate?
 
-* Do You Need Locking?
-  * Will your application have concurrent updates of the same records???
-* Pessimistic Locking
-  * Use if the data is frequently updated, and if updated concurrently
-  * Remember, there is a cost to performing the locking
-* Optimistic Locking
-  * Use if the data is read more often than updated
-  * Majority of applications will use Optimistic Locking
-
-### Multi-Request Conversations
-
-* Multi-Request Conversation - Occurs in web form applications, or possibly RESTful too,
-where the update logic is over one or more requests, thus leaving a larger window of time.
-  * Pessimistic Locking is very fast, milliseconds. Will only protect against conflicts at write
-  time.
-  * Optimistic Locking provides a mechanism to detect stale data over a longer period of
-  time (ie - multiple requests)
-
-### JPA Pessimistic Locking
-* Pessimistic Lock Modes
-  * PESSIMISTIC_READ - uses shared lock, prevents data from being updated or deleted
-  * PESSIMISTIC_WRITE - uses exclusive lock, prevents data from being read (in some
-  isolation levels), updated or deleted
-  * PESSIMISTIC_FORCE_INCREMENT - uses exclusive lock, increments version property
-  of entity
-* Most databases will support PESSIMISTIC_WRITE, this is the option you will typically use
-  * Use PESSIMISTIC_FORCE_INCREMENT if entity has version property
-
-### JPA Optimistic Locking
-* Uses a version property, which is incremented with each update
-* Can be int, Integer, long, Long, short, Short, or java.sql.Timestamp
-  * Most common to use is Integer
-* Prior to an update, Hibernate will read the corresponding database record. If the version
-  does not match, an exception is thrown
-* Downsides:
-  * Updates outside of JPA/Hibernate which do not update the version property will break this
-  * Performance - read before each update
-
-### JPA Optimistic Lock Modes
-* OPTIMISTIC - Obtains optimistic read lock for all entities with version attribute
-* OPTIMISTIC_FORCE_INCREMENT - Same at OPTIMISTIC, but in increments the version
-value
-* READ - JPA 1.x, same as OPTIMISTIC
-* WRITE - JPA 1.x, same as OPTIMISTIC_FORCE_INCREMENT
-
-  ### Spring Data JPA Transactions
-
-* Spring Data JPA by default supports implicit transactions. Meaning repository methods will
-create a transaction by default, if there is not an active transaction.
-* Spring Data JPA has two types of implicit transactions:
-  * Read operations are done in a read only context
-  * Updates and deletes are done with the default transactional context
-* Use read only with caution, dirty checks are skipped, making more performant
-  * If object from read only context is updated and saved, you may encounter issues
-
-### Spring Boot Testing Transactions
-
-* Spring Boot by default will create a transaction for your tests and roll it back
-* The Spring Data JPA Implicit transactions are NOT used in the test context
-  * Implicit transactions are only used outside of a transactional context
-* If you have a method under test with one or more repository method calls, you may see
-  different results when run outside of the test context
-* Typically a detached entity error from accessing lazy load properties outside the
-  Hibernate context
-
-### Declared with the @Transactional Annotation
-
-* Spring Framework provides an @Transactional annotation in the package
-“org.springframework.transaction.annotation”
-* JEE also provides a @Transactional annotation in the package “javax.transaction”
-* Spring will support either option
-  * Spring 4.x might have some compatibility issues
-* Recommended to use Spring Framework’s version of @Transactional
-  * More versatile and Spring specific than JEE’s @Transactional
-
-### Spring’s @Transactional Annotation
-Transactional Annotation Attributes:
-* value / transactionManager - the name of the Transaction Manager to use
-* label - String to describe a transaction
-* Propagation - The Transaction Propagation Type
-* Isolation - Transaction Isolation Level
-* timeout - Timeout for Transaction to complete
-* readOnly - is read only?
-* rollbackFor / rollbackforClassName - Exceptions to rollback for 
-* NoRollbackFor / noRollbackforClassName - Exceptions to NOT rollback for
-
-# @Transactional - Transaction Manager
-* Spring Boot will auto-configure an instance of a Transaction Manager depending on your
-dependencies
-* Spring Framework provides an interface called PlatformTransactionManager
-  * Implementations available for JDBC, JTA (JEE), Hibernate, etc
-  * Spring Boot auto-configures the appropriate implementation
-* Auto-Configured instance named ‘transactionManager
-
-### @Transactional - Transaction Propagation
-* REQUIRED - (Default) - use existing, or create new transaction
-* SUPPORTS - Use existing, or execute non-transactionally if none exists
-* MANDATORY - Support current, throw exception in none exists
-* REQUIRES_NEW - Create new, suspend current
-* NOT_SUPPORTED - Execute non-transactionally, suspend current transaction if exists
-* NEVER - Execute non-transactionally, throw exception if transaction exists
-* NESTED - Use nested transaction if transaction exists, create if not
-* DEFAULT - (Default) Use level of JDBC connection
-* READ_UNCOMMITTED - Allows for dirty, no-repeatable reads
-* READ_COMMITTED - Prevent dirty reads, prevents from reading rows with uncommitted
-  changes
-* REPEATABLE_READ - Prevent dirty reads and non-repeatable reads
-* SERIALIZABLE - prevent all dirty reads, similar to REPEATABLE_READ, and performs
-  second read to verify
-
-### @Transactional - Transaction Timeout
-* Default value is -1, which is to use the underlying implementation
-* Spring Boot does not override this
-* Unless set specifically at the connection level, defaults to the platform setting
-* For MySQL this is 8 hours
-
-#### @Transactional - Read Only
-
-* By default the readOnly property is set to false
-* Spring Data JPA for implicate transactions of read methods will set this to true
-* Using the readOnly property to true does allow for Hibernate to make some efficiency
-optimizations
-* This is NOT guaranteed
-* DO NOT USE if you expect to update and save entities fetched 
-
-#### @Transactional - RollbackFor / NoRollbackFor
-
-* By default unhandled runtime exceptions will be rollback
-* Typically default is fine for most situations
-* Can be useful where you wish to rollback a child transaction, but not the whole transaction
-
-#### Using @Transactional at Repository Level
-* Spring Data JPA Repository methods can be overridden and customized at the repository
-level
-
-![img.png](img.png)
-
-#### Implicit Transactions
-
-![img_1.png](img_1.png)
-
-Don’t Use Private Methods
-
-![img_2.png](img_2.png)
-
-#### Declared Transactions & Scope
-
-![img_3.png](img_3.png)
-
-#### Inherit transactions
-
-![img_4.png](img_4.png)
-
-#### Child transactgions
-
-
-![img_5.png](img_5.png)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+* Generally, validation constraints should reflect the database constraints
+* Validation Constraint Errors are much more friendly that database constraint errors
+* Also, you will receive info on all constraint errors (vs DB which is just first error)
+* If a database string has a max length of 50, the entity should also reflect this
+* Use @NonEmpty or @NonBlank for required String properties - a space is a valid string
+* Generally DO NOT validate Hibernate managed properties
+* ie requiring a database managed id property or version property could cause errors
