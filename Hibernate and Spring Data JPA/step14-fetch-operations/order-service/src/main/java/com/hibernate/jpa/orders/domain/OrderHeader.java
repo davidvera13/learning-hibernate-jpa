@@ -2,6 +2,8 @@ package com.hibernate.jpa.orders.domain;
 
 import com.hibernate.jpa.orders.enums.OrderStatus;
 import jakarta.persistence.*;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import java.util.HashSet;
 import java.util.Objects;
@@ -43,7 +45,8 @@ import java.util.Set;
         )
 })
 public class OrderHeader extends BaseEntity{
-    @ManyToOne
+    // if we don't need to get the customer ...
+    @ManyToOne(fetch = FetchType.LAZY)
     private Customer customer;
     @Embedded
     private Address shippingAddress;
@@ -61,16 +64,19 @@ public class OrderHeader extends BaseEntity{
             mappedBy = "orderHeader",
             cascade = {
                     CascadeType.PERSIST, CascadeType.REMOVE
-            })
+            },
+            fetch = FetchType.EAGER )
+    @Fetch(FetchMode.SUBSELECT)// should fix n+1 queries
     private Set<OrderLine> orderLines;
 
     // if we add the @OneToOne relationship to OrderHeader, we don't need to use orphan removal,
     // we need to use mappedBy instead
     @OneToOne(
-            cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
+            cascade = {CascadeType.PERSIST, CascadeType.REMOVE}
             // orphanRemoval = true // orderApproval value is not deleted if absent
-            mappedBy = "orderHeader"
+            // mappedBy = "orderHeader"
     )
+    @Fetch(FetchMode.SELECT)
     private OrderApproval orderApproval;
 
     public Customer getCustomer() {
