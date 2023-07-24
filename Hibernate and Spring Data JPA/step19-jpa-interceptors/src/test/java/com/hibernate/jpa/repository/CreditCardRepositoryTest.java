@@ -1,0 +1,69 @@
+package com.hibernate.jpa.repository;
+
+import com.hibernate.jpa.domain.CreditCard;
+import com.hibernate.jpa.service.EncryptionService;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.jdbc.core.JdbcTemplate;
+
+import java.util.Map;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
+
+@SpringBootTest
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+class CreditCardRepositoryTest {
+    final String CREDIT_CARD = "123467891114";
+    @Autowired
+    CreditCardRepository creditCardRepository;
+    @Autowired
+    EncryptionService encryptionService;
+    @Autowired
+    JdbcTemplate jdbcTemplate;
+
+    @Test
+    void saveAndStoreCreditCard() {
+        CreditCard creditCard = new CreditCard();
+        creditCard.setCreditCardNumber(CREDIT_CARD);
+        creditCard.setCvv("132");
+        creditCard.setExpirationDate("12/2028");
+
+        CreditCard savedCreditCard = creditCardRepository.save(creditCard);
+        // CreditCard savedCreditCard = creditCardRepository.saveAndFlush(creditCard);
+
+        System.out.println("Getting CC from database");
+        CreditCard storedCreditCard = creditCardRepository.findById(savedCreditCard.getId()).orElseThrow();
+
+        assertThat(savedCreditCard.getCreditCardNumber()).isEqualTo(storedCreditCard.getCreditCardNumber());
+    }
+
+    @Test
+    void saveAndStoreCreditCardAddEncryption() {
+        CreditCard creditCard = new CreditCard();
+        creditCard.setCreditCardNumber(CREDIT_CARD);
+        creditCard.setCvv("132");
+        creditCard.setExpirationDate("12/2028");
+
+        // will display: >> onSave() called
+        // CreditCard savedCreditCard = creditCardRepository.save(creditCard);
+        // will display:
+        CreditCard savedCreditCard = creditCardRepository.saveAndFlush(creditCard);
+
+        System.out.println("Getting CC from database: " + savedCreditCard.getCreditCardNumber());
+        System.out.println("CC At Rest");
+        System.out.println("CC Encrypted: " + encryptionService.encrypt(CREDIT_CARD));
+        Map<String, Object> dbRow = jdbcTemplate.queryForMap("SELECT * FROM credit_card WHERE id = " +  savedCreditCard.getId());
+        String dbCardValue = (String) dbRow.get("credit_card_number");
+
+        assertThat(savedCreditCard.getCreditCardNumber()).isNotEqualTo(dbCardValue);
+        assertThat(dbCardValue).isEqualTo(encryptionService.encrypt(CREDIT_CARD));
+
+        CreditCard storedCreditCard = creditCardRepository.findById(savedCreditCard.getId()).orElseThrow();
+
+        assertThat(savedCreditCard.getCreditCardNumber()).isEqualTo(storedCreditCard.getCreditCardNumber());
+    }
+
+}
