@@ -6,7 +6,7 @@ import spring.learning.coach.Coach;
 /**
  * Basic inversion of control using a bean defined in xml
  */
-public class MainSpringIocApp {
+public class MainSpringApp {
     public static void main(String[] args) {
 
         // let make this more generic and fully configurable using SPRING IOC
@@ -23,8 +23,16 @@ public class MainSpringIocApp {
 
         // 4. Call methods on bean
         System.out.println(coach1.geDailyWorkout());
+        // 4b. Call method from service (Dependency injection)
+        System.out.println(coach1.getDaylyFortune());
+
         System.out.println(coach2.geDailyWorkout());
+        // 4b. Call method from service (Dependency injection)
+        System.out.println(coach2.getDaylyFortune());
+
         System.out.println(coach3.geDailyWorkout());
+        // 4b. Call method from service (Dependency injection)
+        System.out.println(coach3.getDaylyFortune());
         // 5. COntext close
         ctx.close();
     }
